@@ -67,8 +67,6 @@ namespace Microsoft.NET.TestFramework
 
         public string SdkResolverPath { get; set; }
 
-        public bool ShouldUseSdkResolverPath { get; set; }
-
         public ToolsetInfo(string dotNetRoot)
         {
             DotNetRoot = dotNetRoot;
@@ -148,10 +146,15 @@ namespace Microsoft.NET.TestFramework
 
         public void AddTestEnvironmentVariables(SdkCommandSpec command)
         {
-            if (ShouldUseFullFrameworkMSBuild && !ShouldUseSdkResolverPath)
+            if (ShouldUseFullFrameworkMSBuild)
             {
                 string sdksPath = Path.Combine(DotNetRoot, "sdk", SdkVersion, "Sdks");
-                command.Environment["DOTNET_MSBUILD_SDK_RESOLVER_SDKS_DIR"] = sdksPath;
+
+                //  Avoid using stage 0 dotnet install dir
+                command.Environment["DOTNET_MSBUILD_SDK_RESOLVER_CLI_DIR"] = "";
+
+                //  Put stage 2 on the Path (this is how the MSBuild SDK resolver finds dotnet)
+                command.Environment["Path"] = DotNetRoot + ";" + Environment.GetEnvironmentVariable("Path");
 
                 if (!string.IsNullOrEmpty(MicrosoftNETBuildExtensionsPathOverride))
                 {

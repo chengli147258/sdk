@@ -196,6 +196,9 @@ namespace Microsoft.NET.TestFramework
                 "MSBuildSDKsPath",
                 Path.Combine(testContext.ToolsetUnderTest.SdksPath));
 
+            // Use the newly build SDK resolver
+            Environment.SetEnvironmentVariable("MSBUILDADDITIONALSDKRESOLVERSFOLDER", testContext.ToolsetUnderTest.SdkResolverPath);
+
             DotNet.Cli.Utils.MSBuildForwardingAppWithoutLogging.MSBuildExtensionsPathTestHook =
                 testContext.ToolsetUnderTest.SdkFolderUnderTest;
         }
